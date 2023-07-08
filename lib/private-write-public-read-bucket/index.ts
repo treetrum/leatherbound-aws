@@ -10,12 +10,13 @@ export class PrivateWritePublicReadBucket extends s3.Bucket {
       removalPolicy: cdk.RemovalPolicy.DESTROY,
       blockPublicAccess: s3.BlockPublicAccess.BLOCK_ACLS,
       accessControl: s3.BucketAccessControl.BUCKET_OWNER_FULL_CONTROL,
+      versioned: true,
     });
     this.addResourcePolicies(user);
   }
 
   addResourcePolicies(user: iam.User) {
-    // Private read/write
+    // Passed in user can read/write all objects
     this.addToResourcePolicy(
       new iam.PolicyStatement({
         resources: [this.bucketArn, `${this.bucketArn}/*`],
@@ -24,7 +25,7 @@ export class PrivateWritePublicReadBucket extends s3.Bucket {
       })
     );
 
-    // Public read
+    // Anyone can read all objects
     this.addToResourcePolicy(
       new iam.PolicyStatement({
         resources: [this.bucketArn, `${this.bucketArn}/*`],
