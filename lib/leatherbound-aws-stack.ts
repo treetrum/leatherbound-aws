@@ -1,16 +1,16 @@
 import * as cdk from 'aws-cdk-lib';
 import { Construct } from 'constructs';
-// import * as sqs from 'aws-cdk-lib/aws-sqs';
+import * as iam from 'aws-cdk-lib/aws-iam';
+import { PrivateWritePublicReadBucket } from './private-write-public-read-bucket';
 
 export class LeatherboundAwsStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
 
-    // The code that defines your stack goes here
+    const lbBackendUser = new iam.User(this, 'LBBackendUser', {
+      managedPolicies: [iam.ManagedPolicy.fromAwsManagedPolicyName('AmazonS3FullAccess')],
+    });
 
-    // example resource
-    // const queue = new sqs.Queue(this, 'LeatherboundAwsQueue', {
-    //   visibilityTimeout: cdk.Duration.seconds(300)
-    // });
+    new PrivateWritePublicReadBucket(this, 'LBCoversBucket', lbBackendUser);
   }
 }
